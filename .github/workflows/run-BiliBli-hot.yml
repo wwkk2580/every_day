@@ -1,4 +1,4 @@
-name: Run DouYinHot Script
+name: Run BiliBliHot Script
 
 on:
   schedule:
