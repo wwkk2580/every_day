@@ -38,6 +38,7 @@ data = json.loads(resp.text)
 news = ""
 
 # 添加表格标题行
+news += "### 抖音热搜排行榜"
 news += "| **Title** | **链接** |\n"
 news += "| ----- | ---- |\n"
 
