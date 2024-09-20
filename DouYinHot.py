@@ -13,9 +13,16 @@ dingtalk_webhook = f'https://oapi.dingtalk.com/robot/send?access_token={access_t
 # 获取当前日期
 current_date = datetime.now().strftime('%Y-%m-%d')
 
-# 创建 data 目录，如果它不存在
+# 指定输出目录
 output_dir = os.path.join(os.getcwd(), "data")
-os.makedirs(output_dir, exist_ok=True)  # 直接创建目录，如果已存在则不报错
+
+# 检查输出目录，如果是文件则删除
+if os.path.exists(output_dir):
+    if not os.path.isdir(output_dir):
+        os.remove(output_dir)  # 如果是文件则删除
+
+# 创建 data 目录
+os.makedirs(output_dir, exist_ok=True)
 
 # 指定文件路径
 output_file = os.path.join(output_dir, f"{current_date}.md")
