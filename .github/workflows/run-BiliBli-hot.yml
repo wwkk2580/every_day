@@ -1,1 +1,40 @@
+name: Run DouYinHot Script
 
+on:
+  schedule:
+    - cron: '16 * * * *'  # 每小时执行一次
+  workflow_dispatch:  # 允许手动触发工作流
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # 使用 Python 版本
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Run BiliBliHot.py script
+      env:
+        DINGTALK_ACCESS_TOKEN: ${{ secrets.DINGTALK_ACCESS_TOKEN }}  # 从 GitHub Secrets 获取 access_token
+      run: |
+        python BiliBliHot.py
+
+    - name: Commit and push results
+      env:
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # 使用个人开发者密钥
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git add data/*.md
+        git commit -m "Add news report for $(date +'%Y-%m-%d')" || echo "No changes to commit"
+        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref }}
