@@ -10,8 +10,10 @@ if not access_token:
 
 dingtalk_webhook = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}'
 
-# 获取当前日期
-current_date = datetime.now().strftime('%Y-%m-%d')
+# 获取当前日期和时间
+current_datetime = datetime.now()
+current_date = current_datetime.strftime('%Y-%m-%d')
+current_time = current_datetime.strftime('%H-%M-%S')  # 格式化为时分秒
 
 # 指定输出目录
 output_dir = os.path.join(os.getcwd(), "data")
@@ -24,8 +26,8 @@ if os.path.exists(output_dir):
 # 创建 data 目录
 os.makedirs(output_dir, exist_ok=True)
 
-# 指定文件路径
-output_file = os.path.join(output_dir, f"{current_date}.md")
+# 指定文件路径，文件名中增加时分秒
+output_file = os.path.join(output_dir, f"{current_date}_{current_time}.md")
 
 # 请求数据
 orig = 'DouYin'  # 如需改成抖音就填DouYin，以此类推
