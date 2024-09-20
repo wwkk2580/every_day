@@ -7,6 +7,7 @@ from datetime import datetime
 access_token = os.getenv('DINGTALK_ACCESS_TOKEN')
 if not access_token:
     raise ValueError("钉钉机器人 access_token 未设置")
+
 dingtalk_webhook = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}'
 
 # 获取当前日期
@@ -14,8 +15,7 @@ current_date = datetime.now().strftime('%Y-%m-%d')
 
 # 创建 data 目录，如果它不存在
 output_dir = os.path.join(os.getcwd(), "data")
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+os.makedirs(output_dir, exist_ok=True)  # 直接创建目录，如果已存在则不报错
 
 # 指定文件路径
 output_file = os.path.join(output_dir, f"{current_date}.md")
