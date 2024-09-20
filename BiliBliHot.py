@@ -30,7 +30,7 @@ os.makedirs(output_dir, exist_ok=True)
 output_file = os.path.join(output_dir, f"{current_date}_{current_time}.md")
 
 # 请求数据
-orig = 'BiliBliHot'
+orig = 'BiliBli'
 url = f'https://api.gumengya.com/Api/{orig}Hot?format=json'
 resp = requests.get(url)
 
