@@ -1,48 +1,66 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+import os
 import requests
 import json
-import os
 from datetime import datetime
 
-# 定义固定的根目录
-root_dir = "/data"
-# 确保目录存在，如果不存在则创建
-if not os.path.exists(root_dir):
-    os.makedirs(root_dir)
+# 获取钉钉机器人 Webhook access_token 的交互式输入
+access_token = input("请输入钉钉机器人 access_token: ")
+dingtalk_webhook = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}'
 
-# 获取当前日期，用于生成文件名
-current_date = datetime.now().strftime("%Y-%m-%d")
-file_name = f"DouYinHot_{current_date}.txt"
-file_path = os.path.join(root_dir, file_name)  # 生成完整的文件路径
+# 获取当前日期
+current_date = datetime.now().strftime('%Y-%m-%d')
 
-url = 'https://api.gumengya.com/Api/DouYinHot'
-params = {
-    'format': 'json',
-}
+# 创建 data 目录，如果它不存在
+output_dir = os.path.join(os.getcwd(), "data")
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
-try:
-    response = requests.get(url, params=params)
-    # 检查请求是否成功 (HTTP 状态码 200)
+# 指定文件路径
+output_file = os.path.join(output_dir, f"{current_date}.md")
+
+# 请求数据
+orig = 'DouYin'  # 如需改成抖音就填DouYin，以此类推
+url = f'https://api.gumengya.com/Api/{orig}Hot?format=json'
+resp = requests.get(url)
+
+data = json.loads(resp.text)
+news = ""
+
+# 添加表格标题行
+news += "| **Title** | **链接** |\n"
+news += "| ----- | ---- |\n"
+
+# 遍历所有新闻项，并生成表格内容
+for item in data['data']:
+    news += f"| {item['title']} | [链接]({item['url']}) |\n"
+
+# 将结果保存到文件
+with open(output_file, 'w', encoding='utf-8') as f:
+    f.write(news)
+
+print(f"新闻已保存至: {output_file}")
+
+# 读取文件内容
+with open(output_file, 'r', encoding='utf-8') as f:
+    file_content = f.read()
+
+# 钉钉机器人发送消息
+def send_to_dingtalk(content):
+    headers = {
+        "Content-Type": "application/json"
+    }
+    json_data = {
+        "msgtype": "markdown",
+        "markdown": {
+            "title": f"今日热点新闻 {current_date}",
+            "text": content
+        }
+    }
+    response = requests.post(dingtalk_webhook, headers=headers, json=json_data)
     if response.status_code == 200:
-        try:
-            res = response.json()
-            # 状态码 200 表示请求成功
-            if res.get('code') == '200':
-                output = "请求成功: %s\n" % json.dumps(res, ensure_ascii=False, indent=4)
-            else:
-                output = "请求失败: %s\n" % json.dumps(res, ensure_ascii=False, indent=4)
-        except json.JSONDecodeError as e:
-            output = "解析结果异常: %s\n" % e
+        print("消息已发送至钉钉")
     else:
-        output = "请求异常, 状态码: %d\n" % response.status_code
-except requests.RequestException as e:
-    output = "请求发生异常: %s\n" % e
+        print(f"发送失败，状态码: {response.status_code}, 响应: {response.text}")
 
-# 将输出结果按天保存到文件
-with open(file_path, 'a', encoding='utf-8') as f:
-    f.write(f"时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    f.write(output)
-    f.write("\n" + "="*50 + "\n")  # 分隔符，方便阅读
-
-print(f"输出已保存到文件: {file_path}")
+# 调用函数发送消息
+send_to_dingtalk(file_content)
