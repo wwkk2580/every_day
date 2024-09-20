@@ -3,8 +3,10 @@ import requests
 import json
 from datetime import datetime
 
-# 获取钉钉机器人 Webhook access_token 的交互式输入
-access_token = input("请输入钉钉机器人 access_token: ")
+# 获取钉钉机器人 Webhook access_token，从环境变量读取
+access_token = os.getenv('DINGTALK_ACCESS_TOKEN')
+if not access_token:
+    raise ValueError("钉钉机器人 access_token 未设置")
 dingtalk_webhook = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}'
 
 # 获取当前日期
