@@ -2,7 +2,7 @@ name: Run DouYinHot Script
 
 on:
   schedule:
-    - cron: '16 * * * *'  # 每小时执行一次
+    - cron: '05 22,2,6,10 * * *'  # 每小时执行一次
   workflow_dispatch:  # 允许手动触发工作流
 
 jobs:
