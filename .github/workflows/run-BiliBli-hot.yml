@@ -2,7 +2,7 @@ name: Run BiliBliHot Script
 
 on:
   schedule:
-    - cron: '00 22,2,6,10 * * *'  # 每小时执行一次
+    #- cron: '00 22,2,6,10 * * *'  # 每小时执行一次
   workflow_dispatch:  # 允许手动触发工作流
 
 jobs:
